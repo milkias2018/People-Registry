@@ -9,11 +9,12 @@ import com.prs.people_registry.exception.ChildNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public interface PersonServiceInt {
     ChildDto getOldestChild(String personId) throws ChildNotFoundException;
     Person savePerson(PersonDto personDto);
-    List<Child> fetchPersonWithChildren(String personId);
+    PersonDto fetchPersonWithChildren(String personId);
 }
 

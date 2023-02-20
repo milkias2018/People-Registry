@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/persons")
@@ -70,8 +71,8 @@ public class PersonResource {
 
         try {
             if (personId != null) {
-                List<Child> personChildren = personService.fetchPersonWithChildren(personId);
-                return ResponseEntity.ok(personChildren);
+                PersonDto person= personService.fetchPersonWithChildren(personId);
+                return ResponseEntity.ok(person);
             }
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -83,11 +84,11 @@ public class PersonResource {
     *
     * Endpoint to get oldest child name
     * */
-    @GetMapping(value = "/{personId}/oldestChild", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity getOldestChild(@PathVariable String personId) {
+    @GetMapping(value = "/{personId}", params = "oldestChild",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getOldestChild(@PathVariable String personId,@RequestParam(name = "oldestChild") boolean oldestChild) {
 
         try {
-            if (personId != null) {
+            if (personId != null&& oldestChild) {
                 ChildDto childDto = personService.getOldestChild(personId);
                 return ResponseEntity.ok(childDto);
             }

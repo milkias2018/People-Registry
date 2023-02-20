@@ -4,6 +4,7 @@ package com.prs.people_registry.service;
 import com.prs.people_registry.dao.ChildDao;
 import com.prs.people_registry.dao.PersonDao;
 import com.prs.people_registry.dto.ChildDto;
+import com.prs.people_registry.dto.ChildrenDto;
 import com.prs.people_registry.dto.PersonDto;
 import com.prs.people_registry.entity.Child;
 import com.prs.people_registry.entity.Person;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class PersonService implements PersonServiceInt {
@@ -23,10 +26,11 @@ public class PersonService implements PersonServiceInt {
 
     @Override
     public ChildDto getOldestChild(String personId) throws ChildNotFoundException {
-        List<Child> childDto = childDao.findByPersonPersonnummer(personId);
-        Child maxChild = childDto.stream()
+        Optional<Person> person = personDao.findById(personId);
+        Child maxChild = person.get().getChildren()
+                .stream()
                 .max(Comparator.comparing(Child::getAge))
-                .get();
+                .orElseThrow(()->new ChildNotFoundException("Child not found"));
 
         ChildDto childDtoMap = new ChildDto();
         childDtoMap.setPersonnummer(maxChild.getPerson().getPersonnummer());
@@ -45,9 +49,19 @@ public class PersonService implements PersonServiceInt {
     }
 
     @Override
-    public List<Child> fetchPersonWithChildren(String personId) {
-        List<Child> list = childDao.findByPersonPersonnummer(personId);
-        return list;
+    public PersonDto fetchPersonWithChildren(String personId) {
+        Optional<Person> person = personDao.findById(personId);
+        List<ChildrenDto> childrenDtos = person.get().getChildren().stream()
+                .map(child -> new ChildrenDto(child.getPersonnummer(), child.getName(), child.getAge()))
+                .collect(Collectors.toList());
+
+        PersonDto personDto = new PersonDto();
+        personDto.setName(person.get().getName());
+        personDto.setSpouseName(person.get().getSpouseName());
+        personDto.setPersonnummer(person.get().getPersonnummer());
+        personDto.setChildren(childrenDtos);
+
+        return personDto;
 
     }
 }

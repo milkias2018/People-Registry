@@ -23,8 +23,8 @@ public class Person implements Serializable {
     private String name;
     @Column
     private String spouseName;
-    @OneToMany
+    @OneToMany(mappedBy = "person")
     @JsonBackReference
-    private Set<Child> children;
+    private List<Child> children=new ArrayList<>();
    }
 

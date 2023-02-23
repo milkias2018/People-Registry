@@ -31,12 +31,12 @@ public class PersonResource {
      *
      * */
     @PostMapping
-    public ResponseEntity savePerson(@RequestBody PersonDto personDto) {
+    public ResponseEntity<String> savePerson(@RequestBody PersonDto personDto) {
 
         try {
             if (personDto != null) {
-                personService.savePerson(personDto);
-                return ResponseEntity.ok().body(personService.savePerson(personDto));
+                PersonDto personDto1=personService.savePerson(personDto);
+                return ResponseEntity.ok().body(personDto1.getPersonnummer());
             }
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -49,11 +49,11 @@ public class PersonResource {
     * Endpoint to store child for a person
     *  */
     @PostMapping("/{personId}/child")
-    public ResponseEntity saveChildForPerson(@RequestBody ChildrenDto childrenDto, @PathVariable String personId) {
+    public ResponseEntity<String> saveChildForPerson(@RequestBody ChildrenDto childrenDto, @PathVariable String personId) {
         try {
             if (childrenDto != null && personId != null) {
-                childService.saveChild(personId, childrenDto);
-                return ResponseEntity.ok().body(childService.saveChild(personId, childrenDto));
+                Child child=childService.saveChild(personId, childrenDto);
+                return ResponseEntity.ok().body(child.getPersonnummer());
             }
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -67,7 +67,7 @@ public class PersonResource {
     * */
 
     @GetMapping(value = "/{personId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity fetchPersonInfo(@PathVariable String personId) {
+    public ResponseEntity<PersonDto> fetchPersonInfo(@PathVariable String personId) {
 
         try {
             if (personId != null) {
@@ -85,7 +85,7 @@ public class PersonResource {
     * Endpoint to get oldest child name
     * */
     @GetMapping(value = "/{personId}", params = "oldestChild",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity getOldestChild(@PathVariable String personId,@RequestParam(name = "oldestChild") boolean oldestChild) {
+    public ResponseEntity<ChildDto> getOldestChild(@PathVariable String personId,@RequestParam(name = "oldestChild") boolean oldestChild) {
 
         try {
             if (personId != null&& oldestChild) {
@@ -93,7 +93,7 @@ public class PersonResource {
                 return ResponseEntity.ok(childDto);
             }
         } catch (ChildNotFoundException | NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }

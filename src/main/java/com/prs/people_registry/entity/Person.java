@@ -1,6 +1,7 @@
 package com.prs.people_registry.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.prs.people_registry.dto.PersonDto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,7 +25,7 @@ public class Person implements Serializable {
     @Column
     private String spouseName;
     @OneToMany(mappedBy = "person")
-    @JsonBackReference
+    @JsonIgnore
     private List<Child> children=new ArrayList<>();
    }
 

@@ -22,6 +22,5 @@ private String name;
 private int age;
 @ManyToOne
 @JoinColumn(name="person_personnummer", nullable=false)
-@JsonManagedReference
 private Person person;
 }

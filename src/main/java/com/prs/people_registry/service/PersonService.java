@@ -1,7 +1,6 @@
 
 package com.prs.people_registry.service;
 
-import com.prs.people_registry.dao.ChildDao;
 import com.prs.people_registry.dao.PersonDao;
 import com.prs.people_registry.dto.ChildDto;
 import com.prs.people_registry.dto.ChildrenDto;
@@ -9,6 +8,7 @@ import com.prs.people_registry.dto.PersonDto;
 import com.prs.people_registry.entity.Child;
 import com.prs.people_registry.entity.Person;
 import com.prs.people_registry.exception.ChildNotFoundException;
+import com.prs.people_registry.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,31 +21,28 @@ import java.util.stream.Collectors;
 public class PersonService implements PersonServiceInt {
     @Autowired
     private PersonDao personDao;
-    @Autowired
-    private ChildDao childDao;
 
     @Override
     public ChildDto getOldestChild(String personId) throws ChildNotFoundException {
         Optional<Person> person = personDao.findById(personId);
-        Child maxChild = person.get().getChildren()
+        return person.isPresent()?person.get().getChildren()
                 .stream()
                 .max(Comparator.comparing(Child::getAge))
-                .orElseThrow(()->new ChildNotFoundException("Child not found"));
-
-        ChildDto childDtoMap = new ChildDto();
-        childDtoMap.setPersonnummer(maxChild.getPerson().getPersonnummer());
-        childDtoMap.setOldestChildName(maxChild.getName());
-
-        return childDtoMap;
+                .map(child -> new ChildDto(child.getPersonnummer(), child.getName()))
+                .orElseThrow(() -> new ChildNotFoundException("Child not found")):null;
     }
 
+
     @Override
-    public Person savePerson(PersonDto personDto) {
+    public PersonDto savePerson(PersonDto personDto) {
         Person person = new Person();
         person.setPersonnummer(personDto.getPersonnummer());
         person.setName(personDto.getName());
         person.setSpouseName(personDto.getSpouseName());
-        return personDao.save(person);
+        Person savedPerson=personDao.save(person);
+
+        return Utils.EntityToDtoMapper(savedPerson);
+
     }
 
     @Override

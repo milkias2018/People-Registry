@@ -9,6 +9,7 @@ import com.prs.people_registry.entity.Person;
 import com.prs.people_registry.exception.ChildNotFoundException;
 import com.prs.people_registry.service.ChildService;
 import com.prs.people_registry.service.PersonService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,7 +32,7 @@ public class PersonResource {
      *
      * */
     @PostMapping
-    public ResponseEntity<String> savePerson(@RequestBody PersonDto personDto) {
+    public ResponseEntity<String> savePerson(@Valid @RequestBody PersonDto personDto) {
 
         try {
             if (personDto != null) {
@@ -49,7 +50,7 @@ public class PersonResource {
     * Endpoint to store child for a person
     *  */
     @PostMapping("/{personId}/child")
-    public ResponseEntity<String> saveChildForPerson(@RequestBody ChildrenDto childrenDto, @PathVariable String personId) {
+    public ResponseEntity<String> saveChildForPerson(@Valid @RequestBody ChildrenDto childrenDto, @PathVariable String personId) {
         try {
             if (childrenDto != null && personId != null) {
                 Child child=childService.saveChild(personId, childrenDto);

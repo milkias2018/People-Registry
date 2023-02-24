@@ -1,16 +1,13 @@
 package com.prs.people_registry.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.prs.people_registry.dto.PersonDto;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+
 
 @Getter
 @Setter

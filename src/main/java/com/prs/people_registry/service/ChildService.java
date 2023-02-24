@@ -5,6 +5,8 @@ import com.prs.people_registry.dao.PersonDao;
 import com.prs.people_registry.dto.ChildrenDto;
 import com.prs.people_registry.entity.Child;
 import com.prs.people_registry.entity.Person;
+import com.prs.people_registry.exception.PersonNotFoundException;
+import com.prs.people_registry.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,14 +18,19 @@ public class ChildService implements ChildServiceInt {
     private PersonDao personDao;
     @Autowired
     private ChildDao childDao;
+
     @Override
-    public Child saveChild(String personId,ChildrenDto childrenDto) {
-        Optional<Person> person=personDao.findById(personId);
-        Child child=new Child();
-        child.setPersonnummer(childrenDto.getPersonnummer());
-        child.setName(childrenDto.getName());
-        child.setAge(childrenDto.getAge());
-        child.setPerson(person.get());
-        return childDao.save(child);
+    public ChildrenDto saveChild(String personId, ChildrenDto childrenDto) throws PersonNotFoundException {
+        Optional<Person> person = personDao.findById(personId);
+        if (person.isPresent()) {
+            Child child = new Child();
+            child.setPersonnummer(childrenDto.getPersonnummer());
+            child.setName(childrenDto.getName());
+            child.setAge(childrenDto.getAge());
+            child.setPerson(person.get());
+            Child savedChild = childDao.save(child);
+            return Utils.EntityToDtoMapper(savedChild);
+        }
+        throw new PersonNotFoundException("Person not found");
     }
 }

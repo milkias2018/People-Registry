@@ -7,6 +7,7 @@ import com.prs.people_registry.dto.PersonDto;
 import com.prs.people_registry.entity.Child;
 import com.prs.people_registry.entity.Person;
 import com.prs.people_registry.exception.ChildNotFoundException;
+import com.prs.people_registry.exception.PersonNotFoundException;
 import com.prs.people_registry.service.ChildService;
 import com.prs.people_registry.service.PersonService;
 import jakarta.validation.Valid;
@@ -36,8 +37,8 @@ public class PersonResource {
 
         try {
             if (personDto != null) {
-                PersonDto personDto1=personService.savePerson(personDto);
-                return ResponseEntity.ok().body(personDto1.getPersonnummer());
+                PersonDto personDtoFromDB=personService.savePerson(personDto);
+                return ResponseEntity.ok().body(personDtoFromDB.getPersonnummer());
             }
         } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -53,10 +54,10 @@ public class PersonResource {
     public ResponseEntity<String> saveChildForPerson(@Valid @RequestBody ChildrenDto childrenDto, @PathVariable String personId) {
         try {
             if (childrenDto != null && personId != null) {
-                Child child=childService.saveChild(personId, childrenDto);
-                return ResponseEntity.ok().body(child.getPersonnummer());
+                ChildrenDto childrenDtoFromDB=childService.saveChild(personId, childrenDto);
+                return ResponseEntity.ok().body(childrenDtoFromDB.getPersonnummer());
             }
-        } catch (NullPointerException e) {
+        } catch (PersonNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

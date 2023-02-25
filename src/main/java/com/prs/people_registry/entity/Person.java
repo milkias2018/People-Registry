@@ -21,7 +21,7 @@ public class Person implements Serializable {
     private String name;
     @Column
     private String spouseName;
-    @OneToMany(mappedBy = "person")
+    @OneToMany(mappedBy = "person",fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Child> children=new ArrayList<>();
    }

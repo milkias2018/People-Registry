@@ -21,16 +21,16 @@ public class ChildService implements ChildServiceInt {
 
     @Override
     public ChildrenDto saveChild(String personId, ChildrenDto childrenDto) throws PersonNotFoundException {
-        Optional<Person> person = personDao.findById(personId);
-        if (person.isPresent()) {
-            Child child = new Child();
-            child.setPersonnummer(childrenDto.getPersonnummer());
-            child.setName(childrenDto.getName());
-            child.setAge(childrenDto.getAge());
-            child.setPerson(person.get());
-            Child savedChild = childDao.save(child);
-            return Utils.EntityToDtoMapper(savedChild);
-        }
-        throw new PersonNotFoundException("Person not found");
+        Person person = personDao.findById(personId)
+                .orElseThrow(() -> new PersonNotFoundException("Person not found"));
+
+        Child child = new Child();
+        child.setPersonnummer(childrenDto.getPersonnummer());
+        child.setName(childrenDto.getName());
+        child.setAge(childrenDto.getAge());
+        child.setPerson(person);
+
+        return Utils.EntityToDtoMapper(childDao.save(child));
+
     }
 }

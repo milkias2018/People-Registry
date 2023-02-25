@@ -76,7 +76,7 @@ public class PersonResource {
                 PersonDto person= personService.fetchPersonWithChildren(personId);
                 return ResponseEntity.ok(person);
             }
-        } catch (NullPointerException e) {
+        } catch (PersonNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -94,7 +94,7 @@ public class PersonResource {
                 ChildDto childDto = personService.getOldestChild(personId);
                 return ResponseEntity.ok(childDto);
             }
-        } catch (ChildNotFoundException | NullPointerException e) {
+        } catch (ChildNotFoundException | PersonNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
